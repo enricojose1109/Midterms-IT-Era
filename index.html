@@ -7,41 +7,27 @@
 
     <style>
         body {
-            font-family: "Times New Roman", serif;
+            font-family: "Courier New", monospace;
             margin: 0;
             background: black;
             color: #00ffcc;
+            overflow-x: hidden;
         }
 
-        body::before {
-            content: "";
+        canvas {
             position: fixed;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,255,204,0.05),
-                rgba(0,255,204,0.05) 1px,
-                transparent 1px,
-                transparent 40px
-            ),
-            repeating-linear-gradient(
-                90deg,
-                rgba(0,255,204,0.05),
-                rgba(0,255,204,0.05) 1px,
-                transparent 1px,
-                transparent 40px
-            );
+            top: 0;
+            left: 0;
             z-index: -1;
         }
 
         .container {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             margin: 30px;
             padding: 30px;
             border-radius: 12px;
             border: 1px solid #00ffcc;
-            box-shadow: 0 0 20px #00ffcc;
+            box-shadow: 0 0 25px #00ffcc;
         }
 
         h1, h2 {
@@ -50,11 +36,10 @@
         }
 
         .info {
+            text-align: center;
             margin-bottom: 20px;
-            font-size: 18px;
         }
 
-        /* GRID LAYOUT */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -62,51 +47,82 @@
         }
 
         .box {
-            background: rgba(0,255,204,0.1);
+            position: relative;
+            background: rgba(0,255,204,0.08);
             padding: 20px;
             border-left: 5px solid #00ffcc;
             transition: 0.3s;
-            font-size: 18px;
-            line-height: 1.6;
+            cursor: pointer;
+            overflow: hidden;
         }
 
         .box:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 15px #00ffcc;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ffcc;
+        }
+
+        /* CLICK EFFECT */
+        .box:active {
+            box-shadow: 0 0 40px #00ffcc;
+        }
+
+        /* Ripple effect */
+        .box::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            background: rgba(0,255,204,0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        .box.clicked::after {
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+            transition: 0.5s ease;
         }
 
         ul {
             padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.4s ease;
+        }
+
+        .active ul {
+            max-height: 300px;
         }
 
         li {
             margin-bottom: 8px;
         }
 
-        a {
-            color: #00ffcc;
-            text-decoration: none;
+        p.hidden {
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.4s ease;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .active p.hidden {
+            max-height: 200px;
         }
 
-        i {
-            margin-right: 8px;
-        }
-
-        /* Make mobile-friendly */
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
             }
         }
-
     </style>
 </head>
 
 <body>
+
+<canvas id="matrix"></canvas>
 
 <div class="container">
 
@@ -122,58 +138,167 @@
 
     <div class="grid">
 
-        <!-- EXPERIENCE -->
+        <!-- INCIDENT (DESCRIPTIVE) -->
         <div class="box">
             <h3><i class="fas fa-exclamation-triangle"></i> Real-Life Incident</h3>
-            <p>
-            My phone was stolen without a password, allowing unauthorized access to my banking and e-wallet apps. This resulted in compromised accounts and highlighted the dangers of prioritizing convenience over cybersecurity.
+            <p class="hidden">
+                My phone was stolen without a password, allowing unauthorized access to my banking and e-wallet apps. This resulted in compromised accounts and highlighted the dangers of prioritizing convenience over cybersecurity.
             </p>
         </div>
 
-        <!-- RISKS -->
+        <!-- RISKS (BULLETS) -->
         <div class="box">
-            <h3><i class="fas fa-bug"></i> Cybersecurity Risks</h3>
+            <h3><i class="fas fa-bug"></i> Cybersecurity Risks Identified</h3>
             <ul>
-                <li><a href="https://en.wikipedia.org/wiki/Authentication" target="_blank">Lack of authentication</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Identity_theft" target="_blank">Identity theft</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Data_breach" target="_blank">Data breaches</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Online_banking" target="_blank">Financial theft</a></li>
+                <li>Lack of authentication</li>
+                <li>Identity theft</li>
+                <li>Data breaches</li>
+                <li>Financial theft</li>
             </ul>
         </div>
 
-        <!-- ANALYSIS -->
+        <!-- ANALYSIS (DESCRIPTIVE) -->
         <div class="box">
             <h3><i class="fas fa-search"></i> Analysis</h3>
-            <p>
-            The absence of device security reflects a failure in endpoint protection. Mobile devices act as gateways to sensitive information, and weak security allows attackers to bypass safeguards easily.
+            <p class="hidden">
+                The absence of device security reflects a failure in endpoint protection. Mobile devices act as gateways to sensitive information, and weak security allows attackers to bypass safeguards easily.
             </p>
         </div>
 
-        <!-- PREVENTION -->
+        <!-- PREVENTION (BULLETS) -->
         <div class="box">
-            <h3><i class="fas fa-user-shield"></i> Prevention</h3>
+            <h3><i class="fas fa-user-shield"></i> Preventive Measures</h3>
             <ul>
-                <li><a href="https://en.wikipedia.org/wiki/Password" target="_blank">Strong passwords</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Multi-factor_authentication" target="_blank">2FA</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Remote_wipe" target="_blank">Remote wipe</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Data_security" target="_blank">Secure data storage</a></li>
+                <li>Use strong passwords</li>
+                <li>Enable two-factor authentication</li>
+                <li>Activate remote wipe</li>
+                <li>Secure data storage</li>
             </ul>
         </div>
 
-        <!-- BEST PRACTICES -->
+        <!-- BEST PRACTICES (BULLETS) -->
         <div class="box">
-            <h3><i class="fas fa-brain"></i> Best Practices</h3>
+            <h3><i class="fas fa-brain"></i> Best Practices for Data Privacy</h3>
             <ul>
-                <li><a href="https://en.wikipedia.org/wiki/Password_strength" target="_blank">Update passwords</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Online_banking_security" target="_blank">Monitor accounts</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Permission_(computing)" target="_blank">Check permissions</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Computer_security" target="_blank">Stay informed</a></li>
+                <li>Update passwords regularly</li>
+                <li>Monitor bank accounts</li>
+                <li>Review app permissions</li>
+                <li>Stay informed</li>
             </ul>
         </div>
 
     </div>
 
 </div>
+
+<script>
+    const boxes = document.querySelectorAll(".box");
+
+    boxes.forEach(box => {
+        box.addEventListener("click", function () {
+
+            // CLOSE OTHER BOXES
+            boxes.forEach(otherBox => {
+                if (otherBox !== box) {
+                    otherBox.classList.remove("active");
+                    resetTyping(otherBox);
+                }
+            });
+
+            // TOGGLE CURRENT
+            box.classList.toggle("active");
+
+            // ripple effect
+            box.classList.add("clicked");
+            setTimeout(() => {
+                box.classList.remove("clicked");
+            }, 500);
+
+            // TYPEWRITER EFFECT
+            if (box.classList.contains("active")) {
+                const paragraph = box.querySelector("p.hidden");
+                const listItems = box.querySelectorAll("ul li");
+
+                if (paragraph) typeText(paragraph);
+
+                if (listItems.length > 0) {
+                    listItems.forEach((li, index) => {
+                        setTimeout(() => typeText(li), index * 300);
+                    });
+                }
+            } else {
+                resetTyping(box);
+            }
+        });
+    });
+
+    function typeText(element) {
+        if (element.dataset.typed === "true") return;
+
+        const text = element.dataset.original || element.textContent;
+        element.dataset.original = text;
+
+        element.textContent = "";
+        element.dataset.typed = "true";
+
+        let i = 0;
+
+        function typing() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(typing, 25);
+            }
+        }
+
+        typing();
+    }
+
+    function resetTyping(box) {
+        const elements = box.querySelectorAll("p.hidden, ul li");
+
+        elements.forEach(el => {
+            if (el.dataset.original) {
+                el.textContent = el.dataset.original;
+            }
+            el.dataset.typed = "false";
+        });
+    }
+
+    // MATRIX EFFECT
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "01";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+
+    const drops = [];
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#00ffcc";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+                drops[i] = 0;
+
+            drops[i]++;
+        }
+    }
+
+    setInterval(draw, 33);
+</script>
 
 </body>
 </html>
