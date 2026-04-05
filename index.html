@@ -61,12 +61,37 @@
             box-shadow: 0 0 20px #00ffcc;
         }
 
-        /* CLICK EFFECT */
         .box:active {
             box-shadow: 0 0 40px #00ffcc;
         }
 
-        /* Ripple effect */
+        .box.active {
+            animation: openBox 0.4s ease;
+            box-shadow: 0 0 35px #00ffcc, 0 0 60px #00ffcc;
+        }
+
+        @keyframes openBox {
+            0% { transform: scale(0.95); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .box.flash {
+            animation: flash 0.2s;
+        }
+
+        @keyframes flash {
+            0% { background: rgba(0,255,204,0.8); }
+            100% { background: rgba(0,255,204,0.08); }
+        }
+
+        .access-text {
+            font-size: 14px;
+            color: #00ffcc;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            display: none;
+        }
+
         .box::after {
             content: "";
             position: absolute;
@@ -87,28 +112,23 @@
             transition: 0.5s ease;
         }
 
-        ul {
-            padding-left: 20px;
+        /* 🔥 IMPORTANT: HIDE CONTENT */
+        .box ul,
+        .box p.hidden {
+            visibility: hidden;
             max-height: 0;
             overflow: hidden;
             transition: 0.4s ease;
         }
 
-        .active ul {
+        /* SHOW ONLY AFTER ACCESS GRANTED */
+        .box.active.show-content ul {
+            visibility: visible;
             max-height: 300px;
         }
 
-        li {
-            margin-bottom: 8px;
-        }
-
-        p.hidden {
-            max-height: 0;
-            overflow: hidden;
-            transition: 0.4s ease;
-        }
-
-        .active p.hidden {
+        .box.active.show-content p.hidden {
+            visibility: visible;
             max-height: 200px;
         }
 
@@ -138,17 +158,18 @@
 
     <div class="grid">
 
-        <!-- INCIDENT (DESCRIPTIVE) -->
         <div class="box">
             <h3><i class="fas fa-exclamation-triangle"></i> Real-Life Incident</h3>
+            <p class="access-text">> ACCESSING DATA...</p>
             <p class="hidden">
                 My phone was stolen without a password, allowing unauthorized access to my banking and e-wallet apps. This resulted in compromised accounts and highlighted the dangers of prioritizing convenience over cybersecurity.
+    </p>
             </p>
         </div>
 
-        <!-- RISKS (BULLETS) -->
         <div class="box">
             <h3><i class="fas fa-bug"></i> Cybersecurity Risks Identified</h3>
+            <p class="access-text">> ACCESSING DATA...</p>
             <ul>
                 <li>Lack of authentication</li>
                 <li>Identity theft</li>
@@ -157,17 +178,17 @@
             </ul>
         </div>
 
-        <!-- ANALYSIS (DESCRIPTIVE) -->
         <div class="box">
             <h3><i class="fas fa-search"></i> Analysis</h3>
+            <p class="access-text">> ACCESSING DATA...</p>
             <p class="hidden">
                 The absence of device security reflects a failure in endpoint protection. Mobile devices act as gateways to sensitive information, and weak security allows attackers to bypass safeguards easily.
             </p>
         </div>
 
-        <!-- PREVENTION (BULLETS) -->
         <div class="box">
             <h3><i class="fas fa-user-shield"></i> Preventive Measures</h3>
+            <p class="access-text">> ACCESSING DATA...</p>
             <ul>
                 <li>Use strong passwords</li>
                 <li>Enable two-factor authentication</li>
@@ -176,9 +197,9 @@
             </ul>
         </div>
 
-        <!-- BEST PRACTICES (BULLETS) -->
         <div class="box">
             <h3><i class="fas fa-brain"></i> Best Practices for Data Privacy</h3>
+            <p class="access-text">> ACCESSING DATA...</p>
             <ul>
                 <li>Update passwords regularly</li>
                 <li>Monitor bank accounts</li>
@@ -197,37 +218,53 @@
     boxes.forEach(box => {
         box.addEventListener("click", function () {
 
-            // CLOSE OTHER BOXES
             boxes.forEach(otherBox => {
                 if (otherBox !== box) {
-                    otherBox.classList.remove("active");
+                    otherBox.classList.remove("active", "show-content");
                     resetTyping(otherBox);
                 }
             });
 
-            // TOGGLE CURRENT
+            const isOpening = !box.classList.contains("active");
             box.classList.toggle("active");
 
-            // ripple effect
+            box.classList.add("flash");
+            setTimeout(() => box.classList.remove("flash"), 200);
+
             box.classList.add("clicked");
-            setTimeout(() => {
-                box.classList.remove("clicked");
-            }, 500);
+            setTimeout(() => box.classList.remove("clicked"), 500);
 
-            // TYPEWRITER EFFECT
-            if (box.classList.contains("active")) {
-                const paragraph = box.querySelector("p.hidden");
-                const listItems = box.querySelectorAll("ul li");
+            const accessText = box.querySelector(".access-text");
 
-                if (paragraph) typeText(paragraph);
+            if (isOpening && accessText) {
+                accessText.style.display = "block";
+                accessText.textContent = "> ACCESSING DATA...";
 
-                if (listItems.length > 0) {
-                    listItems.forEach((li, index) => {
-                        setTimeout(() => typeText(li), index * 300);
-                    });
-                }
+                setTimeout(() => {
+                    accessText.textContent = "> ACCESS GRANTED";
+                }, 500);
+
+                setTimeout(() => {
+                    accessText.style.display = "none";
+
+                    // SHOW CONTENT ONLY NOW
+                    box.classList.add("show-content");
+
+                    const paragraph = box.querySelector("p.hidden");
+                    const listItems = box.querySelectorAll("ul li");
+
+                    if (paragraph) typeText(paragraph);
+
+                    if (listItems.length > 0) {
+                        listItems.forEach((li, index) => {
+                            setTimeout(() => typeText(li), index * 300);
+                        });
+                    }
+
+                }, 1000);
             } else {
                 resetTyping(box);
+                box.classList.remove("show-content");
             }
         });
     });
